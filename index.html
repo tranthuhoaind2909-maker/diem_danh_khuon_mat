@@ -1,1 +1,2739 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ClassRoll - Điểm danh</title>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#f5f7fb;
+ --card:#fff;
+ --text:#172033;
+ --muted:#667085;
+ --line:#e4e7ec;
+ --primary:#176b67;
+ --primary2:#0e514e;
+ --green:#16834b;
+ --yellow:#b7791f;
+ --red:#c0392b;
+}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,sans-serif;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.top{
+ height:65px;
+ background:white;
+ border-bottom:1px solid var(--line);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:0 28px;
+ position:sticky;
+ top:0;
+ z-index:10;
+}
+.brand{
+ font-size:20px;
+ font-weight:800;
+}
+.brand small{
+ display:block;
+ font-size:11px;
+ color:var(--muted);
+ font-weight:normal;
+}
+.container{
+ max-width:1150px;
+ margin:auto;
+ padding:25px;
+}
+.card{
+ background:white;
+ border:1px solid var(--line);
+ border-radius:16px;
+ padding:20px;
+ margin-bottom:18px;
+ box-shadow:0 5px 20px rgba(0,0,0,.04);
+}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:18px;
+}
+.grid3{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:12px;
+}
+.btn{
+ border:1px solid var(--line);
+ background:white;
+ color:var(--text);
+ padding:10px 15px;
+ border-radius:9px;
+ font-weight:700;
+}
+.btn:hover{background:#f4f6f8}
+.primary{
+ background:var(--primary);
+ color:white;
+ border-color:var(--primary);
+}
+.primary:hover{background:var(--primary2)}
+.danger{
+ color:var(--red);
+ background:#fff0ee;
+}
+.field{margin-bottom:14px}
+.field label{
+ display:block;
+ font-size:13px;
+ font-weight:700;
+ color:var(--muted);
+ margin-bottom:5px;
+}
+.field input{
+ width:100%;
+ padding:11px;
+ border:1px solid var(--line);
+ border-radius:9px;
+}
+.row{
+ display:flex;
+ gap:9px;
+ align-items:center;
+ flex-wrap:wrap;
+}
+.field-row{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+.login{
+ min-height:100vh;
+ display:grid;
+ place-items:center;
+ padding:20px;
+}
+.login-box{
+ width:min(750px,100%);
+ background:white;
+ border:1px solid var(--line);
+ border-radius:20px;
+ padding:30px;
+ box-shadow:0 10px 40px rgba(0,0,0,.08);
+}
+.center{text-align:center}
+.role-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:15px;
+ margin-top:22px;
+}
+.role{
+ background:white;
+ border:2px solid var(--line);
+ border-radius:15px;
+ padding:25px;
+ text-align:left;
+}
+.role:hover{border-color:var(--primary)}
+.role strong{
+ display:block;
+ font-size:18px;
+ margin-bottom:7px;
+}
+.muted{color:var(--muted)}
+.notice{
+ background:#edf7f6;
+ color:var(--primary2);
+ padding:12px;
+ border-radius:10px;
+ margin:14px 0;
+}
+.warn{
+ background:#fff6df;
+ color:#946200;
+ padding:12px;
+ border-radius:10px;
+}
+.bad{
+ background:#fff0ee;
+ color:var(--red);
+ padding:12px;
+ border-radius:10px;
+}
+.stat{
+ padding:17px;
+ border-radius:12px;
+ background:#f2f5f8;
+}
+.stat b{
+ display:block;
+ font-size:25px;
+}
+.stat span{
+ font-size:12px;
+ color:var(--muted);
+}
+.pill{
+ display:inline-block;
+ padding:5px 10px;
+ border-radius:999px;
+ font-size:12px;
+ font-weight:700;
+}
+.present{background:#e7f7ee;color:var(--green)}
+.late{background:#fff2d8;color:#a66a00}
+.absent{background:#ffe9e7;color:var(--red)}
+.pending{background:#eef1f4;color:#667085}
+.photo{
+ width:110px;
+ height:110px;
+ object-fit:cover;
+ border-radius:14px;
+ border:1px solid var(--line);
+}
+.camera{
+ background:#10151d;
+ min-height:330px;
+ border-radius:14px;
+ overflow:hidden;
+ display:grid;
+ place-items:center;
+}
+.camera video{
+ width:100%;
+ max-height:500px;
+ object-fit:cover;
+}
+.qr{
+ display:grid;
+ place-items:center;
+ background:white;
+ padding:18px;
+ border-radius:12px;
+ width:270px;
+ margin:20px auto;
+}
+.steps{
+ display:grid;
+ gap:9px;
+}
+.step{
+ border:1px solid var(--line);
+ border-radius:10px;
+ padding:12px;
+}
+table{
+ width:100%;
+ border-collapse:collapse;
+}
+th,td{
+ padding:10px;
+ border-bottom:1px solid var(--line);
+ text-align:left;
+}
+th{
+ font-size:12px;
+ color:var(--muted);
+}
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.55);
+ display:grid;
+ place-items:center;
+ padding:20px;
+ z-index:100;
+}
+.modal-box{
+ width:min(700px,100%);
+ max-height:92vh;
+ overflow:auto;
+ background:white;
+ border-radius:17px;
+ padding:22px;
+}
+@media(max-width:800px){
+ .grid,.grid3,.role-grid,.field-row{
+  grid-template-columns:1fr;
+ }
+ .top{padding:0 14px}
+ .container{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+/* =========================================================
+   1. CẤU HÌNH
+   ========================================================= */
+
+const CONFIG = {
+    SUPABASE_URL: "",
+    SUPABASE_ANON_KEY: ""
+};
+
+let db = null;
+let hasBackend = false;
+
+
+/* =========================================================
+   2. BIẾN HỆ THỐNG
+   ========================================================= */
+
+const STORAGE_KEY = "CLASSROLL_FINAL_V1";
+
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+
+if(!state){
+    state = {
+        role:null,
+        user:null,
+        profile:null,
+        classes:[],
+        currentClass:null
+    };
+}
+
+let cameraStream = null;
+let qrScanner = null;
+let studentPhoto = null;
+
+
+/* =========================================================
+   3. HÀM CƠ BẢN
+   ========================================================= */
+
+function save(){
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+}
+
+function uid(){
+    if(window.crypto && crypto.randomUUID){
+        return crypto.randomUUID();
+    }
+
+    return "id-" + Date.now() + "-" +
+        Math.random().toString(36).substring(2);
+}
+
+function esc(value){
+    return String(value ?? "")
+        .replace(/[&<>"']/g,function(c){
+            return {
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#39;"
+            }[c];
+        });
+}
+
+function today(){
+    return new Date().toISOString().slice(0,10);
+}
+
+function currentTime(){
+    return new Date().toLocaleTimeString(
+        "vi-VN",
+        {
+            hour:"2-digit",
+            minute:"2-digit",
+            hour12:false
+        }
+    );
+}
+
+function timeToMinutes(t){
+    if(!t) return 0;
+
+    const p=t.split(":").map(Number);
+
+    return p[0]*60+p[1];
+}
+
+function getStart(c){
+    return c.start || c.start_time || "07:30";
+}
+
+function getLate(c){
+    return Number(
+        c.lateMinutes ??
+        c.late_minutes ??
+        10
+    );
+}
+
+function stopCamera(){
+    if(cameraStream){
+        cameraStream.getTracks().forEach(
+            track=>track.stop()
+        );
+
+        cameraStream=null;
+    }
+}
+
+function stopQR(){
+    if(qrScanner){
+        try{
+            qrScanner.stop();
+        }catch(e){}
+
+        qrScanner=null;
+    }
+}
+
+
+/* =========================================================
+   4. GIAO DIỆN ĐĂNG NHẬP
+   ========================================================= */
+
+function loginView(){
+
+return `
+<div class="login">
+
+<div class="login-box">
+
+<div class="center">
+
+<h1>ClassRoll</h1>
+
+<p class="muted">
+Hệ thống điểm danh bằng QR + Camera
+</p>
+
+</div>
+
+<div class="notice">
+Học sinh phải quét trực tiếp mã QR đang hiển thị trên thiết bị của giáo viên.
+Không cho phép tải ảnh QR từ thư viện.
+</div>
+
+<div class="role-grid">
+
+<button class="role" data-action="teacher-login">
+
+<strong>👩‍🏫 Giáo viên</strong>
+
+<span class="muted">
+Tạo nhiều lớp học, mở buổi học,
+hiển thị mã QR và xem báo cáo.
+</span>
+
+</button>
+
+
+<button class="role" data-action="student-login">
+
+<strong>🎓 Học sinh</strong>
+
+<span class="muted">
+Tạo mã sinh viên, họ tên, STT,
+ảnh cá nhân và quét QR bằng camera.
+</span>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+`;
+
+}
+
+
+/* =========================================================
+   5. HEADER
+   ========================================================= */
+
+function header(title,subtitle){
+
+return `
+<header class="top">
+
+<div class="brand">
+
+${title}
+
+<small>${subtitle}</small>
+
+</div>
+
+<div class="row">
+
+<span class="pill pending">
+${state.role==="teacher"?"GIÁO VIÊN":"HỌC SINH"}
+</span>
+
+<button class="btn" data-action="logout">
+Đăng xuất
+</button>
+
+</div>
+
+</header>
+`;
+
+}
+
+
+/* =========================================================
+   6. APP GIÁO VIÊN
+   ========================================================= */
+
+function teacherApp(){
+
+return header(
+    "ClassRoll",
+    "Quản lý lớp và điểm danh"
+)+`
+
+<main class="container">
+
+<div id="teacher-content">
+
+${teacherHome()}
+
+</div>
+
+</main>
+`;
+
+}
+
+
+function teacherHome(){
+
+let c = state.classes.find(
+    x=>x.id===state.currentClass
+);
+
+return `
+
+<div class="row" style="justify-content:space-between;margin-bottom:18px">
+
+<div>
+
+<h1>Lớp học</h1>
+
+<p class="muted">
+Giáo viên có thể tạo nhiều lớp khác nhau.
+</p>
+
+</div>
+
+<button
+class="btn primary"
+data-action="new-class">
++ Tạo lớp mới
+</button>
+
+</div>
+
+
+${
+c ?
+
+`
+
+<div class="grid">
+
+<section class="card">
+
+<h2>${esc(c.name)}</h2>
+
+<p class="muted">
+
+Mã lớp:
+<b>${esc(c.code)}</b>
+
+<br>
+
+Phòng:
+${esc(c.room || "Chưa nhập")}
+
+</p>
+
+
+<div class="grid3">
+
+<div class="stat">
+
+<b>
+${(c.students || []).length}
+</b>
+
+<span>
+Học sinh
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<b>
+${getStart(c)}
+</b>
+
+<span>
+Giờ bắt đầu
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<b>
+${getLate(c)}
+</b>
+
+<span>
+Phút được đi muộn
+</span>
+
+</div>
+
+</div>
+
+
+<div class="row" style="margin-top:18px">
+
+<button
+class="btn primary"
+data-action="open-session"
+data-id="${c.id}">
+📱 Mở mã QR
+</button>
+
+<button
+class="btn"
+data-action="report"
+data-id="${c.id}">
+📊 Báo cáo
+</button>
+
+<button
+class="btn danger"
+data-action="delete-class"
+data-id="${c.id}">
+Xóa lớp
+</button>
+
+</div>
+
+</section>
+
+
+<section class="card">
+
+<h2>Các lớp của giáo viên</h2>
+
+${
+state.classes.length ?
+
+state.classes.map(x=>`
+
+<div
+class="step"
+style="margin-bottom:9px">
+
+<b>${esc(x.name)}</b>
+
+<div class="muted">
+Mã lớp: ${esc(x.code)}
+<br>
+Bắt đầu: ${getStart(x)}
+<br>
+Cho muộn: ${getLate(x)} phút
+</div>
+
+<button
+class="btn"
+style="margin-top:8px"
+data-action="select-class"
+data-id="${x.id}">
+Chọn lớp
+</button>
+
+</div>
+
+`).join("")
+
+:
+
+"<p class='muted'>Chưa có lớp.</p>"
+
+}
+
+</section>
+
+</div>
+
+`
+
+:
+
+`
+
+<div class="card center">
+
+<h2>Chưa có lớp học</h2>
+
+<p class="muted">
+Bấm "Tạo lớp mới" để bắt đầu.
+</p>
+
+</div>
+
+`
+
+}
+
+`;
+
+}
+
+
+/* =========================================================
+   7. FORM TẠO LỚP
+   ========================================================= */
+
+function newClassModal(){
+
+return `
+
+<div class="modal" id="modal">
+
+<div class="modal-box">
+
+<h2>Tạo lớp học mới</h2>
+
+<div class="field">
+
+<label>Tên lớp</label>
+
+<input
+id="class-name"
+placeholder="Ví dụ: 63D1">
+
+</div>
+
+
+<div class="field">
+
+<label>Mã lớp</label>
+
+<input
+id="class-code"
+placeholder="Ví dụ: 63D1">
+
+</div>
+
+
+<div class="field">
+
+<label>Phòng học</label>
+
+<input
+id="class-room"
+placeholder="Ví dụ: P204">
+
+</div>
+
+
+<div class="field-row">
+
+<div class="field">
+
+<label>Thời gian bắt đầu</label>
+
+<input
+id="class-start"
+type="time"
+value="07:30">
+
+</div>
+
+
+<div class="field">
+
+<label>Số phút cho phép đi muộn</label>
+
+<input
+id="class-late"
+type="number"
+min="0"
+max="120"
+value="10">
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+<button
+class="btn"
+data-action="close-modal">
+Hủy
+</button>
+
+<button
+class="btn primary"
+data-action="save-class">
+Tạo lớp
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================================
+   8. HỌC SINH
+   ========================================================= */
+
+function studentApp(){
+
+return header(
+    "ClassRoll",
+    "Hồ sơ học sinh và điểm danh"
+)+`
+
+<main class="container">
+
+${
+state.profile
+?
+studentDashboard()
+:
+studentProfile()
+}
+
+</main>
+`;
+
+}
+
+
+function studentProfile(){
+
+return `
+
+<div
+class="card"
+style="max-width:650px;margin:auto">
+
+<h1>Tạo hồ sơ học sinh</h1>
+
+<p class="muted">
+Nhập thông tin cá nhân trước khi điểm danh.
+Ảnh cá nhân phải được chụp bằng camera của thiết bị.
+</p>
+
+
+<div class="field">
+
+<label>Mã sinh viên</label>
+
+<input
+id="student-code"
+placeholder="Ví dụ: 23D100001">
+
+</div>
+
+
+<div class="field">
+
+<label>Họ và tên</label>
+
+<input
+id="student-name"
+placeholder="Nguyễn Văn A">
+
+</div>
+
+
+<div class="field">
+
+<label>Số thứ tự trong lớp</label>
+
+<input
+id="student-roll"
+type="number"
+min="1"
+placeholder="Ví dụ: 15">
+
+</div>
+
+
+<div class="field">
+
+<label>Ảnh cá nhân</label>
+
+<button
+class="btn primary"
+data-action="take-photo">
+📷 Chụp ảnh bằng camera
+</button>
+
+</div>
+
+
+<div id="photo-result"></div>
+
+
+<div class="notice">
+
+Ảnh được chụp trực tiếp từ camera.
+Hệ thống không cho phép chọn ảnh QR từ thư viện.
+
+</div>
+
+
+<button
+class="btn primary"
+data-action="save-profile">
+
+Lưu hồ sơ và tiếp tục
+
+</button>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================================
+   9. TRANG HỌC SINH SAU KHI ĐĂNG KÝ
+   ========================================================= */
+
+function studentDashboard(){
+
+return `
+
+<div class="grid">
+
+<section class="card">
+
+<h1>
+Xin chào ${esc(state.profile.name)}
+</h1>
+
+<p class="muted">
+
+Mã sinh viên:
+<b>${esc(state.profile.code)}</b>
+
+<br>
+
+STT:
+<b>${esc(state.profile.roll)}</b>
+
+</p>
+
+
+${
+state.profile.photo
+?
+`<img
+src="${state.profile.photo}"
+class="photo">`
+:
+""
+}
+
+
+<div class="notice">
+
+<b>QUAN TRỌNG:</b>
+
+<br>
+
+Trước khi điểm danh, em phải đến lớp
+và lấy mã QR đang hiển thị trên thiết bị
+của giáo viên.
+
+<br><br>
+
+Không thể tải ảnh QR từ điện thoại để điểm danh.
+
+</div>
+
+
+<button
+class="btn primary"
+data-action="scan-qr">
+
+📷 Quét mã QR trực tiếp
+
+</button>
+
+</section>
+
+
+<section class="card">
+
+<h2>Cách điểm danh</h2>
+
+<div class="steps">
+
+<div class="step">
+<b>1.</b>
+Đến lớp học.
+</div>
+
+<div class="step">
+<b>2.</b>
+Giáo viên mở mã QR của buổi học.
+</div>
+
+<div class="step">
+<b>3.</b>
+Bấm "Quét mã QR trực tiếp".
+</div>
+
+<div class="step">
+<b>4.</b>
+Cho phép website sử dụng camera.
+</div>
+
+<div class="step">
+<b>5.</b>
+Đưa camera điện thoại vào mã QR.
+</div>
+
+<div class="step">
+<b>6.</b>
+Hệ thống tự xác định đúng giờ hoặc đi muộn.
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================================
+   10. CAMERA CHỤP ẢNH HỌC SINH
+   ========================================================= */
+
+async function takePhoto(){
+
+const old = document.getElementById("photo-modal");
+
+if(old) old.remove();
+
+
+document.body.insertAdjacentHTML(
+"beforeend",
+
+`
+
+<div class="modal" id="photo-modal">
+
+<div class="modal-box">
+
+<h2>Chụp ảnh cá nhân</h2>
+
+<div class="camera">
+
+<video
+id="student-camera"
+autoplay
+muted
+playsinline>
+</video>
+
+</div>
+
+<p class="muted">
+Hãy nhìn thẳng vào camera.
+</p>
+
+<div class="row">
+
+<button
+class="btn"
+data-action="close-photo">
+Hủy
+</button>
+
+<button
+class="btn primary"
+data-action="capture-student">
+Chụp ảnh
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+);
+
+try{
+
+cameraStream =
+await navigator.mediaDevices.getUserMedia({
+    video:{
+        facingMode:"user"
+    },
+    audio:false
+});
+
+document.getElementById(
+    "student-camera"
+).srcObject = cameraStream;
+
+}catch(e){
+
+alert(
+"Không mở được camera. Hãy cấp quyền camera cho trình duyệt."
+);
+
+}
+
+}
+
+
+function captureStudentPhoto(){
+
+const video =
+document.getElementById("student-camera");
+
+if(!video) return;
+
+const canvas =
+document.createElement("canvas");
+
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
+
+canvas
+.getContext("2d")
+.drawImage(
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+);
+
+studentPhoto =
+canvas.toDataURL(
+    "image/jpeg",
+    .88
+);
+
+stopCamera();
+
+document
+.getElementById("photo-modal")
+.remove();
+
+
+document.getElementById(
+"photo-result"
+).innerHTML = `
+
+<p><b>Ảnh đã chụp:</b></p>
+
+<img
+src="${studentPhoto}"
+class="photo">
+
+`;
+
+}
+
+
+/* =========================================================
+   11. TẠO BUỔI HỌC + QR
+   ========================================================= */
+
+function openSession(c){
+
+const now =
+new Date();
+
+const start =
+timeToMinutes(getStart(c));
+
+const current =
+now.getHours()*60+
+now.getMinutes();
+
+if(current < start){
+
+alert(
+"Chưa đến giờ bắt đầu buổi học."
+);
+
+return;
+
+}
+
+const session = {
+
+id:uid(),
+
+date:today(),
+
+start:getStart(c),
+
+lateMinutes:getLate(c),
+
+token:uid(),
+
+attendance:{}
+
+};
+
+c.session=session;
+
+c.attendance=session.attendance;
+
+save();
+
+showSession(c);
+
+}
+
+
+function showSession(c){
+
+document.body.insertAdjacentHTML(
+"beforeend",
+
+`
+
+<div class="modal" id="session-modal">
+
+<div class="modal-box">
+
+<div class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>${esc(c.name)}</h2>
+
+<div class="muted">
+
+Mã lớp:
+<b>${esc(c.code)}</b>
+
+<br>
+
+Bắt đầu:
+<b>${getStart(c)}</b>
+
+<br>
+
+Cho phép đi muộn:
+<b>${getLate(c)} phút</b>
+
+</div>
+
+</div>
+
+<button
+class="btn"
+data-action="close-session">
+✕
+</button>
+
+</div>
+
+
+<div
+id="teacher-qr"
+class="qr">
+</div>
+
+
+<div class="notice center">
+
+Học sinh phải dùng camera để quét
+mã QR đang hiển thị trên màn hình này.
+
+<br>
+
+<b>Không tải ảnh QR lên.</b>
+
+</div>
+
+
+<div
+id="session-status"
+class="center">
+Đang mở buổi học...
+</div>
+
+
+<div
+class="grid3"
+style="margin-top:15px">
+
+<div class="stat">
+
+<b id="present-count">0</b>
+
+<span>Đúng giờ</span>
+
+</div>
+
+
+<div class="stat">
+
+<b id="late-count">0</b>
+
+<span>Đi muộn</span>
+
+</div>
+
+
+<div class="stat">
+
+<b id="absent-count">0</b>
+
+<span>Vắng</span>
+
+</div>
+
+</div>
+
+
+<div class="row"
+style="justify-content:center;margin-top:18px">
+
+<button
+class="btn"
+data-action="refresh-session"
+data-id="${c.id}">
+Cập nhật
+</button>
+
+<button
+class="btn primary"
+data-action="report"
+data-id="${c.id}">
+Xem báo cáo
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+);
+
+
+const qrData = JSON.stringify({
+
+type:"CLASSROLL",
+
+classId:c.id,
+
+classCode:c.code,
+
+sessionId:c.session.id,
+
+token:c.session.token
+
+});
+
+
+new QRCode(
+document.getElementById("teacher-qr"),
+{
+ text:qrData,
+ width:230,
+ height:230
+}
+);
+
+
+updateSession(c);
+
+window.sessionTimer =
+setInterval(
+()=>{
+
+if(!document.getElementById(
+"session-modal"
+)){
+ clearInterval(window.sessionTimer);
+ return;
+}
+
+updateSession(c);
+
+},
+1000
+);
+
+}
+
+
+/* =========================================================
+   12. TRẠNG THÁI BUỔI HỌC
+   ========================================================= */
+
+function updateSession(c){
+
+if(!c.session) return;
+
+const start =
+timeToMinutes(getStart(c));
+
+const late =
+getLate(c);
+
+const end =
+start+late;
+
+const now =
+new Date();
+
+const current =
+now.getHours()*60+
+now.getMinutes();
+
+let statusText="";
+
+if(current < start){
+
+statusText =
+`Chưa đến giờ. Bắt đầu lúc ${getStart(c)}.`;
+
+}
+
+else if(current <= end){
+
+statusText =
+`🟢 Đang điểm danh. Hết thời gian đi muộn lúc ${formatMinutes(end)}.`;
+
+}
+
+else{
+
+statusText =
+"🔴 Đã hết thời gian điểm danh. Học sinh chưa điểm danh bị đánh VẮNG.";
+
+markAbsents(c);
+
+}
+
+
+const el =
+document.getElementById(
+"session-status"
+);
+
+if(el)
+el.textContent=statusText;
+
+
+updateCounts(c);
+
+}
+
+
+function formatMinutes(total){
+
+const h =
+Math.floor(total/60)
+.toString()
+.padStart(2,"0");
+
+const m =
+(total%60)
+.toString()
+.padStart(2,"0");
+
+return `${h}:${m}`;
+
+}
+
+
+/* =========================================================
+   13. ĐÁNH DẤU VẮNG
+   ========================================================= */
+
+function markAbsents(c){
+
+if(!c.session) return;
+
+const start =
+timeToMinutes(getStart(c));
+
+const end =
+start+getLate(c);
+
+const now =
+new Date();
+
+const current =
+now.getHours()*60+
+now.getMinutes();
+
+if(current<=end) return;
+
+if(!c.attendance)
+c.attendance={};
+
+
+(c.students || []).forEach(
+student=>{
+
+if(!c.attendance[student.code]){
+
+c.attendance[student.code]={
+
+status:"absent",
+
+time:"—",
+
+name:student.name,
+
+roll:student.roll,
+
+photo:student.photo
+
+};
+
+}
+
+});
+
+save();
+
+}
+
+
+/* =========================================================
+   14. CẬP NHẬT SỐ LƯỢNG
+   ========================================================= */
+
+function updateCounts(c){
+
+if(!c) return;
+
+const att =
+c.attendance || {};
+
+let present=0;
+let late=0;
+let absent=0;
+
+Object.values(att).forEach(
+x=>{
+
+if(x.status==="present")
+present++;
+
+if(x.status==="late")
+late++;
+
+if(x.status==="absent")
+absent++;
+
+});
+
+
+const p =
+document.getElementById(
+"present-count"
+);
+
+const l =
+document.getElementById(
+"late-count"
+);
+
+const a =
+document.getElementById(
+"absent-count"
+);
+
+if(p) p.textContent=present;
+if(l) l.textContent=late;
+if(a) a.textContent=absent;
+
+}
+
+
+/* =========================================================
+   15. QUÉT QR BẰNG CAMERA
+   ========================================================= */
+
+async function scanQR(){
+
+document.body.insertAdjacentHTML(
+"beforeend",
+
+`
+
+<div class="modal" id="qr-modal">
+
+<div class="modal-box">
+
+<h2>Quét mã QR lớp</h2>
+
+<div id="qr-reader"></div>
+
+<div class="notice">
+
+Camera chỉ dùng để quét mã QR trực tiếp.
+
+<br>
+
+<b>
+Không có chức năng tải ảnh QR từ thư viện.
+</b>
+
+</div>
+
+<button
+class="btn"
+data-action="close-qr">
+Hủy
+</button>
+
+</div>
+
+</div>
+
+`
+
+);
+
+
+try{
+
+qrScanner =
+new Html5Qrcode("qr-reader");
+
+
+await qrScanner.start(
+
+{
+    facingMode:"environment"
+},
+
+{
+    fps:10,
+    qrbox:{
+        width:250,
+        height:250
+    }
+},
+
+decodedText=>{
+
+stopQR();
+
+const modal =
+document.getElementById(
+"qr-modal"
+);
+
+if(modal)
+modal.remove();
+
+processQR(decodedText);
+
+},
+
+()=>{}
+
+);
+
+}catch(e){
+
+console.error(e);
+
+alert(
+"Không mở được camera. Hãy cấp quyền camera cho website."
+);
+
+}
+
+}
+
+
+/* =========================================================
+   16. XỬ LÝ QR
+   ========================================================= */
+
+function processQR(text){
+
+let data;
+
+try{
+
+data=JSON.parse(text);
+
+}catch(e){
+
+alert(
+"Mã QR không hợp lệ."
+);
+
+return;
+
+}
+
+
+if(data.type!=="CLASSROLL"){
+
+alert(
+"Đây không phải mã QR của ClassRoll."
+);
+
+return;
+
+}
+
+
+const c =
+state.classes.find(
+x=>x.id===data.classId
+);
+
+
+if(!c){
+
+alert(
+"Không tìm thấy lớp học này trên thiết bị."
+);
+
+return;
+
+}
+
+
+if(!c.session){
+
+alert(
+"Buổi học chưa được mở."
+);
+
+return;
+
+}
+
+
+if(
+c.session.id!==data.sessionId ||
+c.session.token!==data.token
+){
+
+alert(
+"Mã QR đã hết hạn hoặc không hợp lệ."
+);
+
+return;
+
+}
+
+
+const start =
+timeToMinutes(getStart(c));
+
+const end =
+start+getLate(c);
+
+const now =
+new Date();
+
+const current =
+now.getHours()*60+
+now.getMinutes();
+
+
+if(current < start){
+
+alert(
+`Chưa đến giờ bắt đầu. Buổi học bắt đầu lúc ${getStart(c)}.`
+);
+
+return;
+
+}
+
+
+if(current > end){
+
+markAbsents(c);
+
+alert(
+"Đã hết thời gian cho phép đi muộn. Bạn được đánh VẮNG."
+);
+
+return;
+
+}
+
+
+const status =
+current>start
+?
+"late"
+:
+"present";
+
+
+if(!c.attendance)
+c.attendance={};
+
+
+c.attendance[state.profile.code]={
+
+status:status,
+
+time:currentTime(),
+
+name:state.profile.name,
+
+roll:state.profile.roll,
+
+photo:state.profile.photo
+
+};
+
+
+if(!c.students)
+c.students=[];
+
+
+const exists =
+c.students.find(
+x=>x.code===state.profile.code
+);
+
+
+if(!exists){
+
+c.students.push({
+
+code:state.profile.code,
+
+name:state.profile.name,
+
+roll:state.profile.roll,
+
+photo:state.profile.photo
+
+});
+
+}
+
+
+save();
+
+
+alert(
+status==="late"
+?
+"Điểm danh thành công. Bạn được ghi nhận ĐI MUỘN."
+:
+"Điểm danh thành công. Bạn được ghi nhận ĐÚNG GIỜ."
+);
+
+}
+
+
+/* =========================================================
+   17. BÁO CÁO
+   ========================================================= */
+
+function showReport(c){
+
+markAbsents(c);
+
+const students =
+c.students || [];
+
+const attendance =
+c.attendance || {};
+
+
+let rows="";
+
+
+students
+.sort(
+(a,b)=>
+Number(a.roll)-Number(b.roll)
+)
+.forEach(
+s=>{
+
+const r =
+attendance[s.code]
+||
+{
+ status:"absent",
+ time:"—"
+};
+
+
+let label="";
+let cls="";
+
+if(r.status==="present"){
+
+label="Đúng giờ";
+cls="present";
+
+}
+
+else if(r.status==="late"){
+
+label="Đi muộn";
+cls="late";
+
+}
+
+else{
+
+label="Vắng mặt";
+cls="absent";
+
+}
+
+
+rows += `
+
+<tr>
+
+<td>${esc(s.roll)}</td>
+
+<td>
+
+${
+s.photo
+?
+`<img
+src="${s.photo}"
+class="photo"
+style="width:45px;height:45px">`
+:
+""
+}
+
+</td>
+
+<td>${esc(s.code)}</td>
+
+<td>
+<b>${esc(s.name)}</b>
+</td>
+
+<td>
+
+<span class="pill ${cls}">
+${label}
+</span>
+
+</td>
+
+<td>${esc(r.time)}</td>
+
+</tr>
+
+`;
+
+});
+
+
+document.body.insertAdjacentHTML(
+"beforeend",
+
+`
+
+<div class="modal" id="report-modal">
+
+<div class="modal-box">
+
+<div class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>Báo cáo điểm danh</h2>
+
+<div class="muted">
+
+${esc(c.name)}
+-
+Mã lớp ${esc(c.code)}
+
+</div>
+
+</div>
+
+<button
+class="btn"
+data-action="close-report">
+✕
+</button>
+
+</div>
+
+
+<div style="overflow:auto">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>STT</th>
+
+<th>Ảnh</th>
+
+<th>Mã SV</th>
+
+<th>Họ tên</th>
+
+<th>Trạng thái</th>
+
+<th>Giờ</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows || `
+
+<tr>
+
+<td colspan="6"
+class="center">
+
+Chưa có học sinh điểm danh.
+
+</td>
+
+</tr>
+
+`}
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="row"
+style="margin-top:18px">
+
+<button
+class="btn primary"
+data-action="export"
+data-id="${c.id}">
+
+⬇ Xuất báo cáo CSV
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+);
+
+}
+
+
+/* =========================================================
+   18. XUẤT CSV
+   ========================================================= */
+
+function exportCSV(c){
+
+markAbsents(c);
+
+const rows=[
+[
+"STT",
+"Mã sinh viên",
+"Họ tên",
+"Trạng thái",
+"Giờ điểm danh"
+]
+];
+
+
+(c.students || [])
+.sort(
+(a,b)=>Number(a.roll)-Number(b.roll)
+)
+.forEach(
+s=>{
+
+const r =
+(c.attendance || {})[s.code]
+||
+{
+status:"absent",
+time:"—"
+};
+
+let status="Vắng mặt";
+
+if(r.status==="present")
+status="Đúng giờ";
+
+if(r.status==="late")
+status="Đi muộn";
+
+
+rows.push([
+s.roll,
+s.code,
+s.name,
+status,
+r.time
+]);
+
+});
+
+
+const csv =
+"\ufeff"+
+rows
+.map(
+row=>
+row
+.map(
+x=>
+`"${String(x??"").replaceAll('"','""')}"`
+)
+.join(",")
+)
+.join("\n");
+
+
+const blob =
+new Blob(
+[csv],
+{
+type:"text/csv;charset=utf-8"
+}
+);
+
+
+const url =
+URL.createObjectURL(blob);
+
+const a =
+document.createElement("a");
+
+a.href=url;
+
+a.download =
+"bao-cao-diem-danh-"+
+c.code+"-"+
+today()+
+".csv";
+
+a.click();
+
+URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================================================
+   19. ĐĂNG XUẤT
+   ========================================================= */
+
+function logout(){
+
+stopCamera();
+stopQR();
+
+state.role=null;
+state.user=null;
+state.profile=null;
+state.currentClass=null;
+
+save();
+
+render();
+
+}
+
+
+/* =========================================================
+   20. XỬ LÝ NÚT BẤM
+   ========================================================= */
+
+document.addEventListener(
+"click",
+async function(e){
+
+const el =
+e.target.closest(
+"[data-action]"
+);
+
+if(!el) return;
+
+const action =
+el.dataset.action;
+
+const id =
+el.dataset.id;
+
+
+/* GIÁO VIÊN */
+
+if(action==="teacher-login"){
+
+state.role="teacher";
+
+state.user={
+id:"teacher-"+uid()
+};
+
+save();
+
+render();
+
+return;
+
+}
+
+
+/* HỌC SINH */
+
+if(action==="student-login"){
+
+state.role="student";
+
+save();
+
+render();
+
+return;
+
+}
+
+
+/* LOGOUT */
+
+if(action==="logout"){
+
+logout();
+
+return;
+
+}
+
+
+/* TẠO LỚP */
+
+if(action==="new-class"){
+
+document.body.insertAdjacentHTML(
+"beforeend",
+newClassModal()
+);
+
+return;
+
+}
+
+
+/* ĐÓNG MODAL */
+
+if(action==="close-modal"){
+
+document.getElementById(
+"modal"
+)?.remove();
+
+return;
+
+}
+
+
+/* LƯU LỚP */
+
+if(action==="save-class"){
+
+const name =
+document.getElementById(
+"class-name"
+).value.trim();
+
+const code =
+document.getElementById(
+"class-code"
+).value.trim();
+
+const room =
+document.getElementById(
+"class-room"
+).value.trim();
+
+const start =
+document.getElementById(
+"class-start"
+).value;
+
+const late =
+Number(
+document.getElementById(
+"class-late"
+).value
+);
+
+
+if(!name || !code || !start){
+
+alert(
+"Vui lòng nhập tên lớp, mã lớp và thời gian bắt đầu."
+);
+
+return;
+
+}
+
+
+if(
+state.classes.some(
+x=>
+x.code.toLowerCase()===
+code.toLowerCase()
+)
+){
+
+alert(
+"Mã lớp này đã tồn tại."
+);
+
+return;
+
+}
+
+
+const c={
+
+id:uid(),
+
+name:name,
+
+code:code,
+
+room:room,
+
+start:start,
+
+lateMinutes:late,
+
+students:[],
+
+attendance:{},
+
+session:null
+
+};
+
+
+state.classes.push(c);
+
+state.currentClass=c.id;
+
+save();
+
+document.getElementById(
+"modal"
+).remove();
+
+render();
+
+return;
+
+}
+
+
+/* CHỌN LỚP */
+
+if(action==="select-class"){
+
+state.currentClass=id;
+
+save();
+
+render();
+
+return;
+
+}
+
+
+/* MỞ BUỔI */
+
+if(action==="open-session"){
+
+const c =
+state.classes.find(
+x=>x.id===id
+);
+
+if(c)
+openSession(c);
+
+return;
+
+}
+
+
+/* ĐÓNG BUỔI */
+
+if(action==="close-session"){
+
+clearInterval(window.sessionTimer);
+
+document.getElementById(
+"session-modal"
+)?.remove();
+
+return;
+
+}
+
+
+/* CẬP NHẬT BUỔI */
+
+if(action==="refresh-session"){
+
+const c =
+state.classes.find(
+x=>x.id===id
+);
+
+if(c)
+updateSession(c);
+
+return;
+
+}
+
+
+/* BÁO CÁO */
+
+if(action==="report"){
+
+const c =
+state.classes.find(
+x=>x.id===id
+);
+
+if(c)
+showReport(c);
+
+return;
+
+}
+
+
+/* ĐÓNG BÁO CÁO */
+
+if(action==="close-report"){
+
+document.getElementById(
+"report-modal"
+)?.remove();
+
+return;
+
+}
+
+
+/* XUẤT CSV */
+
+if(action==="export"){
+
+const c =
+state.classes.find(
+x=>x.id===id
+);
+
+if(c)
+exportCSV(c);
+
+return;
+
+}
+
+
+/* XÓA LỚP */
+
+if(action==="delete-class"){
+
+if(
+confirm(
+"Bạn chắc chắn muốn xóa lớp này?"
+)
+){
+
+state.classes =
+state.classes.filter(
+x=>x.id!==id
+);
+
+if(
+state.currentClass===id
+){
+
+state.currentClass =
+state.classes.length
+?
+state.classes[0].id
+:
+null;
+
+}
+
+save();
+
+render();
+
+}
+
+return;
+
+}
+
+
+/* CHỤP ẢNH HỌC SINH */
+
+if(action==="take-photo"){
+
+takePhoto();
+
+return;
+
+}
+
+
+/* ĐÓNG CAMERA */
+
+if(action==="close-photo"){
+
+stopCamera();
+
+document.getElementById(
+"photo-modal"
+)?.remove();
+
+return;
+
+}
+
+
+/* CHỤP ẢNH */
+
+if(action==="capture-student"){
+
+captureStudentPhoto();
+
+return;
+
+}
+
+
+/* LƯU HỒ SƠ */
+
+if(action==="save-profile"){
+
+const code =
+document.getElementById(
+"student-code"
+).value.trim();
+
+const name =
+document.getElementById(
+"student-name"
+).value.trim();
+
+const roll =
+document.getElementById(
+"student-roll"
+).value.trim();
+
+
+if(
+!code ||
+!name ||
+!roll ||
+!studentPhoto
+){
+
+alert(
+"Phải nhập mã sinh viên, họ tên, STT và chụp ảnh cá nhân."
+);
+
+return;
+
+}
+
+
+state.profile={
+
+code:code,
+
+name:name,
+
+roll:roll,
+
+photo:studentPhoto
+
+};
+
+save();
+
+render();
+
+return;
+
+}
+
+
+/* QUÉT QR */
+
+if(action==="scan-qr"){
+
+scanQR();
+
+return;
+
+}
+
+
+/* ĐÓNG QR */
+
+if(action==="close-qr"){
+
+stopQR();
+
+document.getElementById(
+"qr-modal"
+)?.remove();
+
+return;
+
+}
+
+});
+
+
+/* =========================================================
+   21. KHỞI ĐỘNG
+   ========================================================= */
+
+function render(){
+
+const app =
+document.getElementById("app");
+
+if(!state.role){
+
+app.innerHTML =
+loginView();
+
+return;
+
+}
+
+
+if(state.role==="teacher"){
+
+app.innerHTML =
+teacherApp();
+
+return;
+
+}
+
+
+if(state.role==="student"){
+
+app.innerHTML =
+studentApp();
+
+return;
+
+}
+
+}
+
+
+render();
+
+</script>
+
+</body>
+</html>
